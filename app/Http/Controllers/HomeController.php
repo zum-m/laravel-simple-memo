@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Memo;
+use DB;
 
 class HomeController extends Controller
 {
@@ -40,9 +41,18 @@ class HomeController extends Controller
     public function store(Request $request)
     {
         $posts = $request->all();
-        // dd(\Auth::id());
-        // キー=>バリューで配列にしてdbに入れる？
-        // 30🟡inseertとは
+        // dd($posts);
+
+        // ------
+        DB::transaction(function() use($posts){//クロージャーとは？
+            $memo_id = Memo::insertGetId(['content' => $posts['content'],'user_id'=>\Auth::id()]);
+            if(!empty($posts['new_tag'])){
+                dd('sinnkitaguaari');
+            }
+
+        });
+
+        // ------
         Memo::insert(['content'=> $posts['content'],'user_id'=> \Auth::id()]);
 
         return redirect( route('home'));
