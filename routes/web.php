@@ -22,3 +22,5 @@ Auth::routes();
 
 Route::get('/home', [HomeController::class, 'index'])->name('home');
 Route::post('/store', [HomeController::class, 'store'])->name('store');
+// {id]で元のメモデータを取ってくる.memostableから
+Route::get('/edit/{id}', [HomeController::class, 'edit'])->name('edit');

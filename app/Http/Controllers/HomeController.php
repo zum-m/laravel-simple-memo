@@ -47,4 +47,19 @@ class HomeController extends Controller
 
         return redirect( route('home'));
     }
+
+    public function edit($id)//引数にmemosからのidを
+    {
+        $memos = Memo::select('memos.*')
+            ->where('user_id', '=', \Auth::id())
+            ->whereNull('deleted_at')
+            ->orderBy('updated_at', 'DESC')// ASC＝小さい順、DESC=大きい順
+            ->get();
+
+        $edit_memo = Memo::find($id);//findは主キーを取得する
+        
+        return view('edit', compact('memos','edit_memo'));
+
+    }
+
 }
