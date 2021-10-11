@@ -32,6 +32,7 @@ class HomeController extends Controller
         $posts = $request->all();
         // dd(\Auth::id());
         // キー=>バリューで配列にしてdbに入れる？
+        // 30🟡inseertとは
         Memo::insert(['content'=> $posts['content'],'user_id'=> \Auth::id()]);
 
         return redirect( route('home'));
