@@ -32,6 +32,7 @@ class HomeController extends Controller
             ->get();
             // dd($memos);
 
+            // compactでレンダリング？🟡
         return view('create', compact('memos'));
 
     }
