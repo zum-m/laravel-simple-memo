@@ -46,8 +46,10 @@ class HomeController extends Controller
         // ------
         DB::transaction(function() use($posts){//クロージャーとは？
             $memo_id = Memo::insertGetId(['content' => $posts['content'],'user_id'=>\Auth::id()]);
-            if(!empty($posts['new_tag'])){
-                dd('sinnkitaguaari');
+            $tag_exists = Tag::where('user_id', '=', \Auth::id())->where('nane', '=', $posts['new_tag'])
+            ->exists();
+            if(!empty($posts['new_tag']) && !$tag_exists ){
+                $tag_is = Tag::insertGetId(['user_is'] => \Auth::id(), 'name' => $posts['new_tag'])
             }
 
         });
@@ -87,6 +89,7 @@ class HomeController extends Controller
 
         // Memo::where('id', $posts['memo_id'])->delete();←NGこれやると物理削除
         Memo::where('id', $posts['memo_id'])->update(['deleted_at' => date("Y-m-d H:i:s", time())]);
+
 
         return redirect( route('home') );
     }
