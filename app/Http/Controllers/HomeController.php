@@ -57,9 +57,19 @@ class HomeController extends Controller
             ->get();
 
         $edit_memo = Memo::find($id);//findは主キーを取得する
-        
+
         return view('edit', compact('memos','edit_memo'));
 
     }
+
+    public function update(Request $request)
+    {
+        $posts = $request->all();
+        // dd($posts);
+
+        Memo::where('id', $posts['memo_id'])->update(['content'=> $posts['content']]);
+        return redirect( route('home'));
+    }
+
 
 }
