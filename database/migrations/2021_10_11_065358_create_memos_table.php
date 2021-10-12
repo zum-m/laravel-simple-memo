@@ -22,7 +22,6 @@ class CreateMemosTable extends Migration
             // timestampと書いてしまうと、レコード挿入時、更新時に値が入らないので、DB::rawで直接書いてます
             $table->timestamp('updated_at')->default(\DB::raw('CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP'));
             $table->timestamp('created_at')->default(\DB::raw('CURRENT_TIMESTAMP'));
-            // 🟡外部キー制約とは？unsignedのとこ２３
             $table->foreign('user_id')->references('id')->on('users');
         });
     }
