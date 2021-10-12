@@ -25,21 +25,20 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        // 45 viewcomposerを作成
-        view()->composer('*', function($view){
-            
-
+        // 全てのメソッドが呼ばれる前に先に呼ばれるメソッド
+        view()->composer('*', function ($view) {
+            // 自分のメモ取得はMemoモデルに任せる
+            // インスタンス化
             $memo_model = new Memo();
+            // メモ取得
+            $memos = $memo_model->getMyMemo();
 
-            $memo = $memo_model->getMyMemo();
-
-            $tags = Tag::where('user_id', '=' , \Auth::id())
+            $tags = Tag::where('user_id', '=', \Auth::id())
                 ->whereNull('deleted_at')
-                ->orderBy('id','DESC')
+                ->orderBy('id', 'DESC')// ASC＝小さい順、DESC=大きい順
                 ->get();
 
-            $view->with('memos', $memos)->with('tags',$tags);
-
+            $view->with('memos', $memos)->with('tags', $tags);
         });
     }
 }
