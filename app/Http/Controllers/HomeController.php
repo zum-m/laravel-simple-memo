@@ -35,6 +35,7 @@ class HomeController extends Controller
             ->get();
         
         $tags = Tag::where('user_id', '=', \Auth::id())->whereNull('deleted_at')->orderBy('id', 'DESC')->get();
+        // dd($tags);
 
         return view('create', compact('memos', 'tags'));
     }
@@ -42,6 +43,7 @@ class HomeController extends Controller
     public function store(Request $request)
     {
         $posts = $request->all();
+        // dd($posts);
         // dump dieの略 → メソッドの引数の取った値を展開して止める → データ確認
 
         // ===== ここからトランザクション開始 ======
