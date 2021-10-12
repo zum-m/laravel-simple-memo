@@ -27,29 +27,25 @@ class HomeController extends Controller
      */
     public function index()
     {
-        //ここでメモを取得,Auth::id()でログインユーザーのみデータを所得
+        //ここでメモを取得
         $memos = Memo::select('memos.*')
             ->where('user_id', '=', \Auth::id())
             ->whereNull('deleted_at')
             ->orderBy('updated_at', 'DESC')// ASC＝小さい順、DESC=大きい順
             ->get();
-            // dd($memos);
-
+        
         $tags = Tag::where('user_id', '=', \Auth::id())->whereNull('deleted_at')->orderBy('id', 'DESC')->get();
-        // dd($tags);
 
-            // compactでレンダリング？🟡
-        return view('create', compact('memos','tags'));
-
+        return view('create', compact('memos', 'tags'));
     }
 
     public function store(Request $request)
     {
         $posts = $request->all();
-        // dd($posts);
+        // dump dieの略 → メソッドの引数の取った値を展開して止める → データ確認
 
-        // ------
-        DB::transaction(function() use($posts){//クロージャーとは？
+        // ===== ここからトランザクション開始 ======
+        DB::transaction(function() use($posts) {
             // メモIDをインサートして取得
             $memo_id = Memo::insertGetId(['content' => $posts['content'], 'user_id' => \Auth::id()]);
             $tag_exists = Tag::where('user_id', '=', \Auth::id())->where('name', '=', $posts['new_tag'])->exists(); 
@@ -61,56 +57,79 @@ class HomeController extends Controller
                 // memo_tagsにインサートして、メモとタグを紐付ける
                 MemoTag::insert(['memo_id' => $memo_id, 'tag_id' => $tag_id]);
             }
-
             // 既存タグが紐付けられた場合→memo_tagsにインサート
-            if(!empty($posts['tags'][0])|| $posts['new_tag'] ==="0"){
-                foreach($posts['tags'] as $tag){
-                    MemoTag::insert(['memo_id' => $memo_id, 'tag_id' => $tag]);
-                }
+            foreach($posts['tags'] as $tag){
+                MemoTag::insert(['memo_id' => $memo_id, 'tag_id' => $tag]);
             }
-
-
         });
+        // ===== ここまでがトランザクションの範囲 ======
 
-        // ------
-        Memo::insert(['content'=> $posts['content'],'user_id'=> \Auth::id()]);
 
-        return redirect( route('home'));
+        return redirect( route('home') );
     }
 
-    public function edit($id)//引数にmemosからのidを
+    public function edit($id)
     {
+        //ここでメモを取得
         $memos = Memo::select('memos.*')
             ->where('user_id', '=', \Auth::id())
             ->whereNull('deleted_at')
             ->orderBy('updated_at', 'DESC')// ASC＝小さい順、DESC=大きい順
             ->get();
 
-        $edit_memo = Memo::find($id);//findは主キーを取得する
+        $edit_memo = Memo::select('memos.*', 'tags.id AS tag_id')
+            ->leftJoin('memo_tags', 'memo_tags.memo_id', '=', 'memos.id')
+            ->leftJoin('tags', 'memo_tags.tag_id', '=', 'tags.id')
+            ->where('memos.user_id', '=', \Auth::id())
+            ->where('memos.id', '=', $id)
+            ->whereNull('memos.deleted_at')
+            ->get();
+            
+        $include_tags = [];
+        foreach($edit_memo as $memo){
+            array_push($include_tags, $memo['tag_id']);
+        }
 
-        return view('edit', compact('memos','edit_memo'));
+        $tags = Tag::where('user_id', '=', \Auth::id())->whereNull('deleted_at')->orderBy('id', 'DESC')->get();
 
+        return view('edit', compact('memos', 'edit_memo', 'include_tags', 'tags'));
     }
 
     public function update(Request $request)
     {
         $posts = $request->all();
-        // dd($posts);
+        // トランザクションスタート
+        DB::transaction(function () use($posts){
+            Memo::where('id', $posts['memo_id'])->update(['content' => $posts['content']]);
+            // 一旦メモとタグの紐付けを削除
+            MemoTag::where('memo_id', '=', $posts['memo_id'])->delete();
+            // 再度メモとタグの紐付け
+            foreach ($posts['tags'] as $tag) {
+                MemoTag::insert(['memo_id' => $posts['memo_id'], 'tag_id' => $tag]);
+            }
+            // 新規タグが入力されているかチェック
+            // もし、新しいタグの入力があれば、インサートして紐付ける
+            $tag_exists = Tag::where('user_id', '=', \Auth::id())->where('name', '=', $posts['new_tag'])->exists(); 
+            // 新規タグが既にtagsテーブルに存在するのかチェック
+            if( !empty($posts['new_tag']) && !$tag_exists ){
+                // 新規タグが既に存在しなければ、tagsテーブルにインサート→IDを取得
+                $tag_id = Tag::insertGetId(['user_id' => \Auth::id(), 'name' => $posts['new_tag']]);
+                // memo_tagsにインサートして、メモとタグを紐付ける
+                MemoTag::insert(['memo_id' => $posts['memo_id'], 'tag_id' => $tag_id]);
+            }
+        });
+        // トランザクションここまで
 
-        Memo::where('id', $posts['memo_id'])->update(['content'=> $posts['content']]);
-        return redirect( route('home'));
+        return redirect( route('home') );
     }
 
-    public function destroy(Request $request)
+    public function destory(Request $request)
     {
         $posts = $request->all();
 
         // Memo::where('id', $posts['memo_id'])->delete();←NGこれやると物理削除
         Memo::where('id', $posts['memo_id'])->update(['deleted_at' => date("Y-m-d H:i:s", time())]);
 
-
         return redirect( route('home') );
     }
-
-
 }
