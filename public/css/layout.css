@@ -1,0 +1,13 @@
+.my-card-body{
+    height: calc( 100vh - (55px + 48px + 2px));
+}
+
+/* 一行で記述するcss記述 */
+.elipsis{
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.bld{
+    font-weight: bold;
+}
