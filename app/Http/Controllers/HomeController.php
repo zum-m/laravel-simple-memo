@@ -35,15 +35,18 @@ class HomeController extends Controller
             ->get();
             // dd($memos);
 
+        $tags = Tag::where('user_id', '=', \Auth::id())->whereNull('deleted_at')->orderBy('id', 'DESC')->get();
+        // dd($tags);
+
             // compactでレンダリング？🟡
-        return view('create', compact('memos'));
+        return view('create', compact('memos','tags'));
 
     }
 
     public function store(Request $request)
     {
         $posts = $request->all();
-        // dd($posts);
+        dd($posts);
 
         // ------
         DB::transaction(function() use($posts){//クロージャーとは？
