@@ -25,13 +25,31 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        //
+        // 45 viewcomposerを作成
         view()->composer('*', function($view){
-            $memos = Memo::select('memos.*')
-                ->where('user_id', '=', \Auth::id())
-                ->whereNull('deleted_at')
-                ->orderBy('updated_at', 'DESC')// ASC＝小さい順、DESC=大きい順
-                ->get();
+            $query_tag = \Request::query('tag');
+
+            // 46 分岐処理
+            if ( !empty($query_tag)){
+                $memos = Memo::select('memos.*')
+                 ->leftJoin('memo_tags', 'memo_tags.memo_id' ,'=', 'memos.id' )
+                 ->where('memo_tags.tag_id', '=', $query_tag)
+                    ->where('user_id', '=', \Auth::id())
+                    ->whereNull('deleted_at')
+                    ->orderBy('updated_at', 'DESC')// ASC＝小さい順、DESC=大きい順
+                    ->get();
+
+
+            }else{
+                $memos = Memo::select('memos.*')
+                    ->where('user_id', '=', \Auth::id())
+                    ->whereNull('deleted_at')
+                    ->orderBy('updated_at', 'DESC')// ASC＝小さい順、DESC=大きい順
+                    ->get();
+
+            }
+            
+
 
             $tags = Tag::where('user_id', '=' , \Auth::id())
                 ->whereNull('deleted_at')
