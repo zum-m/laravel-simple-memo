@@ -46,7 +46,7 @@ class HomeController extends Controller
     public function store(Request $request)
     {
         $posts = $request->all();
-        dd($posts);
+        // dd($posts);
 
         // ------
         DB::transaction(function() use($posts){//クロージャーとは？
@@ -61,6 +61,14 @@ class HomeController extends Controller
                 // memo_tagsにインサートして、メモとタグを紐付ける
                 MemoTag::insert(['memo_id' => $memo_id, 'tag_id' => $tag_id]);
             }
+
+            // 既存タグが紐付けられた場合→memo_tagsにインサート
+            if(!empty($posts['tags'][0])|| $posts['new_tag'] ==="0"){
+                foreach($posts['tags'] as $tag){
+                    MemoTag::insert(['memo_id' => $memo_id, 'tag_id' => $tag]);
+                }
+            }
+
 
         });
 
