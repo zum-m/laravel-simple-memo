@@ -75,54 +75,8 @@
             </div>
         </nav>
 
-        <!-- 3カラムに変更 -->
-        <main class="">
-            <div class="row m-0">
-                <div class="col-md-2 p-0">
-                    <div class="card">カード
-                        <div class="card-header">
-                            <!-- {{ __('Dashboard') }} -->
-                            左カラム（bootカード）
-                        </div>
-                        <div class="card-body">
-                            <!-- @if (session('status'))
-                                <div class="alert alert-success" role="alert">
-                                    {{ session('status') }}
-                                </div>
-                            @endif
-
-                            {{ __('You are logged in!') }} -->
-
-                            タグ一覧
-                        </div>
-                    </div>
-
-                </div>
-                <div class="col-md-4 px-0">
-                    <div class="card">カード
-                        <div class="card-header">
-                            <!-- {{ __('Dashboard') }} -->
-                            中央
-                        </div>
-                        <div class="card-body">
-                            <!-- @if (session('status'))
-                                <div class="alert alert-success" role="alert">
-                                    {{ session('status') }}
-                                </div>
-                            @endif
-
-                            {{ __('You are logged in!') }} -->
-
-                            メモ一覧
-                        </div>
-                    </div>
-
-                </div>
-                <div class="col-md-6">
-                    右
-                    @yield('content')
-                </div>
-            </div>
+        <main class="py-4">
+            @yield('content')
         </main>
     </div>
 </body>

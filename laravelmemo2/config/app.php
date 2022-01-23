@@ -13,7 +13,7 @@ return [
     |
     */
 
-    'name' => env('APP_NAME', 'Laravel'),
+    'name' => env('APP_NAME', 'Lara(config/app.nameを変更test中、確認しよう)'),
 
     /*
     |--------------------------------------------------------------------------
