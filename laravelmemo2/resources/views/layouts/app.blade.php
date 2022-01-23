@@ -79,10 +79,10 @@
         <main class="">
             <div class="row m-0">
                 <div class="col-md-2 p-0">
-                    <div class="card">カード
+                    <div class="card">
                         <div class="card-header">
                             <!-- {{ __('Dashboard') }} -->
-                            左カラム（bootカード）
+                            左カラム.bootcard
                         </div>
                         <div class="card-body">
                             <!-- @if (session('status'))
@@ -99,7 +99,7 @@
 
                 </div>
                 <div class="col-md-4 px-0">
-                    <div class="card">カード
+                    <div class="card">
                         <div class="card-header">
                             <!-- {{ __('Dashboard') }} -->
                             中央
@@ -118,8 +118,7 @@
                     </div>
 
                 </div>
-                <div class="col-md-6">
-                    右
+                <div class="col-md-6 p-0">
                     @yield('content')
                 </div>
             </div>
