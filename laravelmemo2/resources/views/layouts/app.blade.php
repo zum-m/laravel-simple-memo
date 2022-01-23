@@ -76,13 +76,14 @@
         </nav>
 
         <!-- 3カラムに変更 -->
+        <!-- タグ表示カラム -->
         <main class="">
             <div class="row m-0">
                 <div class="col-md-2 p-0">
-                    <div class="card">カード
+                    <div class="card">
                         <div class="card-header">
                             <!-- {{ __('Dashboard') }} -->
-                            左カラム（bootカード）
+                            左カラム.bootcard
                         </div>
                         <div class="card-body">
                             <!-- @if (session('status'))
@@ -97,29 +98,22 @@
                         </div>
                     </div>
 
+        <!-- 一覧表示カラム -->
                 </div>
                 <div class="col-md-4 px-0">
-                    <div class="card">カード
-                        <div class="card-header">
-                            <!-- {{ __('Dashboard') }} -->
-                            中央
-                        </div>
-                        <div class="card-body">
-                            <!-- @if (session('status'))
-                                <div class="alert alert-success" role="alert">
-                                    {{ session('status') }}
-                                </div>
-                            @endif
-
-                            {{ __('You are logged in!') }} -->
-
+                    <div class="card">
+                        <div class="card-header"><!-- {{ __('Dashboard') }} -->
                             メモ一覧
                         </div>
+                        <div class="card-body">
+                        @foreach($memos as $memo)
+                          <a href="/edit/{{$memo['id']}}" class="card-text d-block">{{ $memo['content'] }}</a>
+                        @endforeach
+                        </div>
                     </div>
-
                 </div>
-                <div class="col-md-6">
-                    右
+        <!-- メモ作成画面カラム -->
+                <div class="col-md-6 p-0">
                     @yield('content')
                 </div>
             </div>
