@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\Memo;
 
 class HomeController extends Controller
 {
@@ -24,5 +25,17 @@ class HomeController extends Controller
     public function index()
     {
         return view('create');
+    }
+
+    public function store(Request $request)
+    {
+        $posts = $request->all();
+        // dd($posts);
+        
+        // classを作成先指定::sql文法([key]=>value,)の形。valueはhttp通信で受け取ったデータ
+        Memo::insert(['content'=>$posts['content'],'user_id'=>\Auth::id() ]);
+        // dd(\Auth::id());
+
+        return redirect( route('home'));
     }
 }

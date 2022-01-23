@@ -3,7 +3,8 @@
 @section('content')
 <div class="card">
     <div class="card-header">新規メモ作成</div>
-    <form class="card-body" action="/store" method="POST">
+    <form class="card-body" action="{{ route('store') }}" method="POST">
+    <!-- または<form class="card-body" action="/store" method="POST"> -->
         @csrf
         <div class="mb-3">
             <!-- <label for="exampleFormControlTextarea1" class="form-label">Example textarea</label> -->
