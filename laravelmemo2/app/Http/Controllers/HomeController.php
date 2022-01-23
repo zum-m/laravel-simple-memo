@@ -58,6 +58,7 @@ class HomeController extends Controller
 // メモを編集する関数
     public function edit($id)
     {
+        // dd($id); // app.bladeの一覧表示の<a>のheaf属性からの受け取り確認。$memos（DBから作成した配列）があることが前提
         $memos = Memo::select('memos.*')
             ->where('user_id', '=' , \Auth::id())
             ->whereNull('deleted_at')
@@ -70,6 +71,16 @@ class HomeController extends Controller
         return view('edit' , compact('memos' , 'edit_memo'));
     }
 
+// 投稿編集後の一覧アップデートの処理
+    public function update(Request $request)
+    {
+        $posts = $request->all();
+        // dd($posts);
+
+        Memo::where('id', $posts['memo_id'])->update(['content' => $posts['content']]);
+
+        return redirect( route('home'));
+    }
 
 }
 
