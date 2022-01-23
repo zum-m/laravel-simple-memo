@@ -82,5 +82,20 @@ class HomeController extends Controller
         return redirect( route('home'));
     }
 
+// 消去機能の実装
+    public function destroy(Request $request)
+    {
+        $posts = $request->all();
+        // dd($posts);
+
+        // 消去するが、データベースのdeleted_atのカラムを加えていきたいから、updet()を使う
+        // Memo::where('id', $posts['memo_id'])->delete();←NGこれやると物理削除
+        Memo::where('id', $posts['memo_id'])->update(['deleted_at' => date("Y-m-d H:i:s", time())]);
+
+        // Memo::where('id', $posts['memo_id'])->update(['deleted_at' => data('Y-m-d H:i:s', time() )]);  🟦date("")の引数はダブルクオーテーション
+
+        return redirect( route('home'));
+    }
+
 }
 
