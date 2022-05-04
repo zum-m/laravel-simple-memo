@@ -94,6 +94,7 @@ class HomeController extends Controller
     
     
 // メモを編集する関数
+// それとともにタグを操作する関数
     public function edit($id)
     {
         // dd($id); // app.bladeの一覧表示の<a>のheaf属性からの受け取り確認。$memos（DBから作成した配列）があることが前提
@@ -103,10 +104,26 @@ class HomeController extends Controller
             ->orderBy('updated_at', 'DESC')
             ->get();
     
-        $edit_memo = Memo::find($id);
+        $edit_memo = Memo::select('memos.*', 'tags.id AS tag_id')
+            ->leftJoin('memo_tags', 'memo_tags.memo_id', '=', 'memos.id')
+            ->leftJoin('tags', 'memo_tags.tag_id', '=', 'tags.id')
+            ->where('memos.user_id', '=', \Auth::id())
+            ->where('memos.id', '=', $id)
+            ->whereNull('memos.deleted_at')
+            ->get();
+
+        $include_tags = [];
+            foreach($edit_memo as $memo){
+                array_push($include_tags, $memo['tag_id']);
+            }
+            // dd($include_tags);
+
+        $tags = Tag::where('user_id', '=', \Auth::id())
+            ->whereNull('deleted_at')
+            ->orderBy('id', 'DESC')
+            ->get();
     
-    
-        return view('edit' , compact('memos' , 'edit_memo'));
+        return view('edit' , compact('memos' , 'edit_memo', 'include_tags' , 'tags'));
     }
 
 // 投稿編集後の一覧アップデートの処理
@@ -129,9 +146,9 @@ class HomeController extends Controller
         // 消去するが、データベースのdeleted_atのカラムを加えていきたいから、updet()を使う
         // Memo::where('id', $posts['memo_id'])->delete();←NGこれやると物理削除
         Memo::where('id', $posts['memo_id'])->update(['deleted_at' => date("Y-m-d H:i:s", time())]);
-
+        
         // Memo::where('id', $posts['memo_id'])->update(['deleted_at' => data('Y-m-d H:i:s', time() )]);  🟦date("")の引数はダブルクオーテーション
-
+        
         return redirect( route('home'));
     }
 
